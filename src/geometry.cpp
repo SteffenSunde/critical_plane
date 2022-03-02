@@ -5,13 +5,19 @@
 
 #include <array>
 
+/*
+    Calculates the maximum rectangular hull containing the given points. At least 10 steps is recommended for accuracy.
+    
+    Returns: Half-length of rectangle diagonal, given by
+
+    \begin{equation}\label{eq:mrh}
+        \tau_a = \quad \max_\omega{\sqrt{a_1^2(\omega) + a_2^2(\omega)}}, \quad 0\leq\omega\leq\pi/2
+    \end{equation}
+
+    [1] [Araujo et al (2002)](https://doi.org/10.1016/S0142-1123(01)00191-8)
+*/
 auto maximum_rectangular_hull(PointList2d const& points, int num_steps) -> double
 {
-    /*
-        Calculates the maximum rectangular hull containing the given points
-        
-        Returns: Length of rectangle diagonal
-    */
     int const num_points = points.size();
     if (num_points < 1) return 0;
     

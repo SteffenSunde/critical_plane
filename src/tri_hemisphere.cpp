@@ -4,10 +4,11 @@
 
 #include <numeric>
 
+
+/// Generate a unit hemisphere (pyramid)
 TriHemisphere::TriHemisphere() :
     m_nodes({{{0, 1, 0}}, {{0, 0, -1}}, {{-1, 0, 0}}, {{0, 0, 1}}, {{1, 0, 0}}}),
     m_cells({{0, 1, 4, -1}, {0, 1, 2, -1}, {0, 2, 3, -1}, {0, 3, 4, -1}}),
-    //m_values({0, 1, 2, 3, 4}),
     m_num_cells(4), m_num_nodes(5), m_refined_cells(0), m_visited_nodes(0), m_max_value(0.0)
 
 {
@@ -15,6 +16,7 @@ TriHemisphere::TriHemisphere() :
 }
 
 
+/// Refines all triangles in the hemsiphere into four new ones 
 int TriHemisphere::Refine() 
 {
     int num_cells = this->m_cells.size();
@@ -26,6 +28,7 @@ int TriHemisphere::Refine()
 }
 
 
+/// Refines a specific cell into four new ones
 void TriHemisphere::RefineCell(int const id)
 {
     int const a = m_cells[id].a;
@@ -36,7 +39,7 @@ void TriHemisphere::RefineCell(int const id)
     Vector3d const mp2 = ((m_nodes[b].coords + m_nodes[c].coords) * 0.5).normalized();
     Vector3d const mp3 = ((m_nodes[c].coords + m_nodes[a].coords) * 0.5).normalized();
 
-    int d = this->FindNode(mp1, id);  // TODO: How to make more efficient? Quadtree? 
+    int d = this->FindNode(mp1, id);  // TODO: Use QuadTree lookup
     int e = this->FindNode(mp2, id);
     int f = this->FindNode(mp3, id);
 
@@ -49,8 +52,10 @@ void TriHemisphere::RefineCell(int const id)
     m_refined_cells++;
 }
 
-
-int TriHemisphere::FindNode(Vector3d const &v, size_t const cell_id) {
+/// Insert a new node if it is not already in the Hemisphere.
+/// TODO: Use Quadtree structure for O(log n) lookup
+/// TODO: Should rather be called InsertNode!
+int TriHemisphere::FindNode(Vector3d const &v, size_t const cell_id) { 
     auto it = std::find_if(m_nodes.begin(),
                            m_nodes.end(), [&v](auto const &el) {
                                return el.coords.isApprox(v);
@@ -64,6 +69,9 @@ int TriHemisphere::FindNode(Vector3d const &v, size_t const cell_id) {
     }
 }
 
+
+/// Refines a certain ratio of all cells based on their value
+/// TODO: Implement smarter selection!
 int TriHemisphere::RefineNodes(double const subset_ratio)
 {
     int const num_nodes = m_nodes.size();
@@ -88,6 +96,7 @@ int TriHemisphere::RefineNodes(double const subset_ratio)
 }
 
 
+/// Add a series of new values computed since last time Hemisphere was refined.
 void TriHemisphere::AddValues(std::vector<double> const& values) 
 {
     if(values.size() != m_nodes.size() - m_visited_nodes) {
@@ -107,6 +116,8 @@ void TriHemisphere::AddValues(std::vector<double> const& values)
 }
 
 
+/// Find the id numbers of all critical nodes
+/// TODO: Inefficient
 std::vector<int> TriHemisphere::CriticalNodes()
 {
     std::vector<int> idx(m_values.size());

@@ -6,12 +6,15 @@
 #include <vector>
 #include <iostream>
 
+/// Calculates the shear stress vector given Cauchy tensor
 auto calc_shear(Tensor3d const& stress, Vector3d const& plane_normal) -> Vector3d
 {
     Vector3d const traction = stress*plane_normal;
     return traction - (plane_normal.transpose()*traction)*plane_normal;
 }
 
+
+/// Helper function to generate a 3x3 stress matrix from Voigt components
 auto from_voigt(double xx, double yy, double zz, double yz, double xz, double xy) -> Tensor3d 
 {
     Tensor3d stress_matrix;
@@ -19,6 +22,8 @@ auto from_voigt(double xx, double yy, double zz, double yz, double xz, double xy
     return stress_matrix;
 }
 
+
+/// Calculates the normal stress (scalar) and shear stress for the given plane
 auto normal_and_shear(Tensor3d const& stress, Vector3d const& plane_normal) -> std::tuple<double, Vector3d>
 {
     double const normal_stress = plane_normal.transpose()*stress*plane_normal;
@@ -26,6 +31,9 @@ auto normal_and_shear(Tensor3d const& stress, Vector3d const& plane_normal) -> s
     return {normal_stress, shear_stress};
 }
 
+
+/// Generates a coordinate system for the given plane.
+/// Unit directions is chosen by cyclic permutation s.t. z-axis is in the plane normal direction.
 auto in_plane_csys(Vector3d const& plane_normal) -> Csys
 {
     Vector3d const plane_unit_normal = plane_normal.normalized();
@@ -55,9 +63,10 @@ auto in_plane_csys(Vector3d const& plane_normal) -> Csys
     return basis;
 }
 
+
+/// Calculates the shear stress (2d vector) history in the plane by parallel projection
 auto shear_path(TensorList3d const& stress_history, Vector3d const& plane_normal) -> PointList2d
 {
-
     Csys const basis = in_plane_csys(plane_normal);
 
     // TODO: Check use of Vector2d = vec3d.head<2>();
@@ -73,16 +82,9 @@ auto shear_path(TensorList3d const& stress_history, Vector3d const& plane_normal
     return result;
 }
 
-// auto project(Vector3d const& shear, Vector3d const& plane_normal) -> Vector2d 
-// {
 
-// }
-
-
+/// Obtain the 2-dimensional vector in the plane by shear vector projection
 auto shear_projection(Vector3d const& shear, Csys const& local_csys) ->  Vector2d
 {
-    /*
-
-    */
     return {shear.dot(local_csys.col(0)), shear.dot(local_csys.col(1))};  // TODO: Maybe faster to just do the full matrix operation and cap result?
 }

@@ -74,12 +74,9 @@ TEST_CASE("In-plane csys") {
     Vector3d plane_normal{1,0,0};
     auto answer = in_plane_csys(plane_normal);
     Csys correct;
-    correct << 0, 0, 1,  // TODO: Why transposed??
+    correct << 0, 0, 1,
                1, 0, 0,
                0, 1, 0;
-    // std::cout << answer.col(0) << "\n\n";
-    // std::cout << answer.col(1) << "\n\n";
-    // std::cout << answer.col(2) << "\n\n";
 
     for (auto i : iter::range(3)) {
         for (auto j : iter::range(3)) {

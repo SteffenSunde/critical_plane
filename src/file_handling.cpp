@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 
+/// Export two-dimensional data (x, y) as a comma-separated ascii file
 void print_to_file(PointList2d const& points, std::string const& file_path)
 {
     std::ofstream file_stream;
@@ -17,6 +18,7 @@ void print_to_file(PointList2d const& points, std::string const& file_path)
 }
 
 
+/// Exports the hemisphere with damage values as VTK legacy format
 void write_to_file(TriHemisphere const& hemisphere, std::string const& file_path)
 {
     // Plots the given set of unit normals as a set of points and triangular cells in VTK Legacy format.
@@ -24,8 +26,7 @@ void write_to_file(TriHemisphere const& hemisphere, std::string const& file_path
     int const discarded_cells = (int)std::count_if(hemisphere.m_cells.begin(), hemisphere.m_cells.end(), [] (auto const& c) {return c.refined; });
     int const num_cells = hemisphere.m_cells.size() - discarded_cells;
 
-    std::cout << "Writing " << num_points << " of points with "
-              << num_cells << " cells to file (" << hemisphere.m_refined_cells << " cells were refined)\n";
+    printf("Writing %d of points with %d cells to file (%d cells were refined)\n", num_points, num_cells);
     std::ofstream file_stream;
     file_stream.open(file_path);
 

@@ -5,7 +5,7 @@ project(test)
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(Eigen3 REQUIRED NO_MODULE)
+#find_package(Eigen3 REQUIRED NO_MODULE)
 # set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR/extern})
 # add_library(Catch2::Catch IMPORTED INTERFACE)
 # set_property(Catch2::Catch PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CATCH_INCLUDE_DIR}")
@@ -40,6 +40,7 @@ add_executable(critplane_cli main.cpp ${SOURCES})
 target_link_libraries(critplane_cli Eigen3::Eigen critplane)
 target_include_directories(critplane_cli PUBLIC ${TARGET_INCLUDE})
 
+# Testing
 #find_package(Catch2)
 option(ENABLE_TESTING "Building test suite for Catch2" TRUE)
 if (ENABLE_TESTING)
@@ -52,4 +53,4 @@ if (ENABLE_TESTING)
 endif()
 
 # Benchmarking
-add_subdirectory(bench)
+#add_subdirectory(bench)

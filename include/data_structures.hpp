@@ -21,7 +21,7 @@ using Vector3d = Eigen::Vector3d;
 using PointList3d = std::vector<Vector3d>;
 
 // Tensors
-using Tensor3d = Eigen::Matrix3d;  // TODO use array of 6 instead? (Voigt)
+using Tensor3d = Eigen::Matrix3d;
 using TensorList3d = std::vector<Tensor3d>;
 
 // A Basis (Csys) is a matrix with three linearly independent basis vectors as columns

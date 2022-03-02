@@ -5,37 +5,43 @@
 #include "file_handling.hpp"
 
 #include <Eigen/Core>
+#include <boost/program_options.hpp>
+
 #include <iostream>
+#include <chrono>
 
-int main() {
-    TriHemisphere hs;
-    Findley fn;
-    hs.Refine();
-    hs.Refine();
+namespace po = boost::program_options;
+using Clock = std::chrono::system_clock; 
 
-    TensorList3d load_history {from_voigt(0, -242, 0, 0, 0, 0), from_voigt(0, 242, 0, 0, 0, 0)};
-    int max_iterations = 20;
-    int new_nodes = hs.m_nodes.size();
-    int iteration = 1;
-    double subset_size = 0.1;
-    while(new_nodes > 0) {
-        std::vector<double> damages;
-        damages.reserve(new_nodes);
-        for (int i=hs.m_visited_nodes; i < hs.m_nodes.size(); ++i) {
-            Vector3d const& n = hs.m_nodes[i].coords;
-            damages.push_back(fn.Damage(load_history, 0.0, n));
+int main(int argc, const char* argv[]) 
+{
+    try {
+        po::options_description global{"Allowed options"};
+        global.add_options()
+            ("help,h", "Display help message");
+            ("input,i", po::value<std::string>(), "Run fatigue calculations on input file")
+        po::variables_map vm;
+        po::parsed_options parsed = po::command_line_parser(argc, argv)
+            .options(global)
+            .allow_unregistered()
+            .run();
+        po::store(parsed, vm);
+        po::notify(vm);   
+        std::vector<std::string> unrecognized = po::collect_unrecognized(parsed.options, po::include_positional);
+
+        if (vm.empty()) {
+            std::cout << "Critical plane calculations. See --help for more info.\n";
+        } else if (vm.count("input")) {
+            std::string const& file = vm["input"].as<std::string>();
+            std::cout << "Running on input-file " << file << "\n";
+            // TODO
         }
-
-        hs.AddValues(damages);
-        if(iteration < max_iterations) {
-            new_nodes = hs.RefineNodes(subset_size);  // TODO: This only refines in a small stupid area around the first found max!
-            iteration++;
-            subset_size /= 2;
-        } else {
-            std::cout << "Warning: Maximum number of iterations reached! Stopping...\n";
-            break;
-        }
+    } catch (const po::error& ex) {
+        std::cerr << ex.what() << "\n";
     }
 
-    write_to_file(hs, "C:/Users/steff/source/repos/test/build/Debug/test.vtk");
+    double elapsed = (double)std::chrono::duration_cast<std::chrono::seconds>(Clock::now() - start_time).count();
+    printf("Elapsed: %.3f seconds", elapsed);
+
+    return 0;
 }

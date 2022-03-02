@@ -4,6 +4,8 @@
 
 #include "data_structures.hpp"
 
+
+/// A triangular cell
 struct TriCell 
 {
     int a, b, c;
@@ -11,21 +13,26 @@ struct TriCell
     bool refined = false;
 };
 
+
+/// Coordinate data for a node in a hemisphere
 struct TriNode 
 {
     Vector3d coords;
     bool visited = false;
 };
 
+
 /*
+A data structure to keep track of material plane orientations.
+Data is stored as a two-dimensional mesh of triangles, s.t. each triangle
+may be refined based on a refinement scheme.
 
-TODO: Implement a simpler TriHemisphere that only needs
-two coordinates to define a point. The third point is related to the 
-first two by 1 - x^2 - y^2
+Warning: Not very efficient yet.
 
-Use quadtree to lookup nodes.
-Also make constexpr
-
+TODO: 
+- Use quadtree to store point data for O(logn) lookup
+- Different (less brute-force) strategies for refinement
+- Implement a static constexpr version for compile-time search space calculation. 
 */
 struct TriHemisphere 
 {
@@ -39,18 +46,32 @@ struct TriHemisphere
     double m_max_value;
     int m_max_node;
     
+    /// Generate a unit hemisphere (pyramid)
     TriHemisphere(); 
 
-    int Refine();  // Globally refine all cells
-    //int RefineNodes(double const threshold);  
-    int RefineNodes(double const ratio);  // Refine critical cells
+    /// Refines a certain ratio of all cells based on their value
+    int RefineNodes(double const ratio); 
+
+    /// Refines all triangles in the hemsiphere into four new ones 
+    int Refine();
+
+    /// Add a series of new values computed since last time Hemisphere was refined
     void AddValues(std::vector<double> const& damages);
 
 private:
+
+    /// Refines a specific cell into four new ones
     void RefineCell(int const id);
+
+    /// Insert a new node if it is not already in the Hemisphere
     int FindNode(Vector3d const& coordinates, size_t const cell_id);
-    bool EvaluateCell(size_t const id, double const threshold) const;
+
+    //bool EvaluateCell(size_t const id, double const threshold) const;
+
+    /// Insert a new node if it is not already in the Hemisphere.
     int FindNode();
+    
+    /// Store ids for the critical node selection
     std::vector<int> CriticalNodes();
 };
 

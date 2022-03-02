@@ -23,7 +23,7 @@ TEST_CASE("Test uniaxial")
         hs.Refine();
         hs.AddValues({1,0,0,0,0,0,0,0,0,0,0,0,0});
         int refined_nodes = hs.RefineNodes(0.05);
-        REQUIRE(hs.m_max_value == 1.0);
-        REQUIRE(hs.m_max_node == 0);
+        REQUIRE(hs.m_max_value == Approx(1.0));
+        REQUIRE(hs.m_max_node == Approx(0));
     }
 }

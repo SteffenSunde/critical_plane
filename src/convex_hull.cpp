@@ -7,6 +7,9 @@
 #include <functional>
 #include <vector>
 
+
+/// Three points in the plane are either co-linear or form a left or right turn.
+/// Returns None if the three given points are co-linear.
 auto orientation(Vector2d const& a, Vector2d const& b, Vector2d const& c) -> std::optional<Turn>
 {
     double const crossprod = (b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]);
@@ -18,6 +21,8 @@ auto orientation(Vector2d const& a, Vector2d const& b, Vector2d const& c) -> std
     return std::nullopt;
 }
 
+
+/// Sort two-dimensional points (x,y) lexicographically, i.e. by x then y coordinates.
 auto lexicographical_sort(PointList2d points) -> PointList2d 
 {
     auto lexicographical_order = [](Vector2d const& a, Vector2d const& b) -> bool {
@@ -30,6 +35,11 @@ auto lexicographical_sort(PointList2d points) -> PointList2d
     return points;
 }
 
+
+/// Computes the unique (two-dimensional) convex hull by the given list of points.
+/// Uses the Graham Scan algorithm [1], which is O(nlogn) for n input points.
+/// Traverses the input twice to form the upper and lower hull separately, which are then combined.
+/// [1] R. Graham (1972), DOI: 10.1016/0020-0190(72)90045-2
 auto convex_hull(PointList2d points) -> PointList2d 
 {
     int N = points.size();
@@ -49,7 +59,7 @@ auto convex_hull(PointList2d points) -> PointList2d
             if (turn && turn.value() == Turn::CW) {
                 pos++;
             } else {
-                upper.erase(upper.end()-pos-1);
+                upper.erase(upper.end()-pos-1); // Erasing is ok because it is at the vector end.
             }
         }
         upper.emplace_back(points[i]);
