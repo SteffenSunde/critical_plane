@@ -15,19 +15,26 @@ using Clock = std::chrono::system_clock;
 
 int main(int argc, const char* argv[]) 
 {
+    auto start_time = Clock::now();
+
     try {
-        po::options_description global{"Allowed options"};
-        global.add_options()
-            ("help,h", "Display help message");
-            ("input,i", po::value<std::string>(), "Run fatigue calculations on input file")
+        po::options_description description{"Allowed options"};
+        description.add_options()
+            ("help,h", "Display help message")
+            ("input,i", po::value<std::string>(), "Run fatigue calculations on input file");
         po::variables_map vm;
         po::parsed_options parsed = po::command_line_parser(argc, argv)
-            .options(global)
+            .options(description)
             .allow_unregistered()
             .run();
         po::store(parsed, vm);
         po::notify(vm);   
         std::vector<std::string> unrecognized = po::collect_unrecognized(parsed.options, po::include_positional);
+
+        if (vm.count("help")) {
+            std::cout << description << "\n";
+            return 1;
+        }
 
         if (vm.empty()) {
             std::cout << "Critical plane calculations. See --help for more info.\n";

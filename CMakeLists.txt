@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(test)
-
-# See example at https://github.com/EmbersArc/Epigraph/blob/master/CMakeLists.txt
+project(critical_plane)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -9,6 +7,9 @@ set(CMAKE_CXX_STANDARD 20)
 # set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR/extern})
 # add_library(Catch2::Catch IMPORTED INTERFACE)
 # set_property(Catch2::Catch PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CATCH_INCLUDE_DIR}")
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
 
 set(SOURCES 
@@ -18,39 +19,24 @@ set(SOURCES
     src/stress.cpp
     src/findley.cpp
     src/tri_hemisphere.cpp)
-    
-set(TARGET_INCLUDE 
+
+set(TARGET_INCLUDE
     include
-    extern
-    $ENV{Eigen3_INCLUDE_DIR}
-    $ENV{INCLUDEDIR}
-    "D:\\include"
 )
 
+# LIB
 add_library(critplane ${SOURCES})
-target_link_libraries(critplane Eigen3::Eigen)
-target_include_directories(critplane PUBLIC ${TARGET_INCLUDE}})
-#target_include_directories(critplane PUBLIC )
-# add_executable(critplane_cli ${SOURCES})  # TODO: Write into library
-# target_link_libraries(critplane_cli critplane)
-# target_include_directories(critplane_cl)
+target_link_libraries(critplane ${CONAN_LIBS})
+target_include_directories(critplane PUBLIC include ${TARGET_INCLUDE}})
 
 # CLI
-add_executable(critplane_cli main.cpp ${SOURCES})
-target_link_libraries(critplane_cli Eigen3::Eigen critplane)
-target_include_directories(critplane_cli PUBLIC ${TARGET_INCLUDE})
+add_executable(critplane_cli src/cli_main.cpp)
+target_link_libraries(critplane_cli critplane ${CONAN_LIBS})
+target_include_directories(critplane_cli PUBLIC include ${TARGET_INCLUDE})
 
 # Testing
-#find_package(Catch2)
-option(ENABLE_TESTING "Building test suite for Catch2" TRUE)
-if (ENABLE_TESTING)
-    include_directories(tests)
-    add_executable(run_tests tests/run_tests.cpp)
-    target_include_directories(run_tests PUBLIC ${TARGET_INCLUDE})
-    target_link_libraries(run_tests Eigen3::Eigen)
-    target_link_libraries(run_tests critplane)
-    #target_compile_options(run_tests PRIVATE -mbig-obj) 
-endif()
+enable_testing()
+add_subdirectory(tests)
 
 # Benchmarking
 #add_subdirectory(bench)

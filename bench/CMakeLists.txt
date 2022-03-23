@@ -16,8 +16,8 @@ foreach(ONE_BENCH_CPP ${ALL_BENCH_CPP})
    set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME ${ONE_BENCH_EXEC}) 
    target_link_libraries(${TARGET_NAME} 
 
-# If required, you can add your project library here
-# ...
+   # If required, you can add your project library here
+   # ...
 
          benchmark
      ${CMAKE_THREAD_LIBS_INIT})

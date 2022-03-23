@@ -54,7 +54,7 @@ Uses a TriHemisphere to discretize the search space as a mesh of triangles.
 Returns the entire hemisphere for visualization. If only critical plane orientation
 and maximum damge is needed, TODO.
 */
-auto Findley::AdaptiveDamage(TensorList3d const& load_history, max_iterations: size_t) {
+auto Findley::AdaptiveDamage(TensorList3d const& load_history, double findley_k, size_t max_iterations) -> TriHemisphere {
     TriHemisphere hs;
     hs.Refine();
     hs.Refine();
@@ -67,7 +67,7 @@ auto Findley::AdaptiveDamage(TensorList3d const& load_history, max_iterations: s
         damages.reserve(new_nodes);
         for (int i=hs.m_visited_nodes; i < hs.m_nodes.size(); ++i) {
             Vector3d const& n = hs.m_nodes[i].coords;
-            damages.push_back(fn.Damage(load_history, 0.0, n));
+            damages.push_back(this->Damage(load_history, 0.0, n));
         }
 
         hs.AddValues(damages);
