@@ -84,6 +84,8 @@ auto shear_path(TensorList3d const& stress_history, Vector3d const& plane_normal
 
 
 /// Obtain the 2-dimensional vector in the plane by shear vector projection
+/// Csys is the local coordinate system where the first two directions define the projection plane.
+/// Hence, third coordinate direction is the plane unit normal
 auto shear_projection(Vector3d const& shear, Csys const& local_csys) ->  Vector2d
 {
     return {shear.dot(local_csys.col(0)), shear.dot(local_csys.col(1))};  // TODO: Maybe faster to just do the full matrix operation and cap result?

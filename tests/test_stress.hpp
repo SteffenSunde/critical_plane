@@ -43,9 +43,9 @@ TEST_CASE("Parallel projection") {
     
     SECTION("Vector perpendicular to the plane of projection") {
         Vector3d vec{1,0,0};
-        Vector3d ex{0,0,0};
-        Vector3d ey{1,0,0};
-        Vector3d ez{0,1,0};
+        Vector3d ex{0,1,0};
+        Vector3d ey{0,0,1};
+        Vector3d ez{1,0,0};
         Csys csys;
         csys << ex, ey, ez;
 
@@ -55,18 +55,20 @@ TEST_CASE("Parallel projection") {
     }
 
     SECTION("Shear projection") {
-        Vector3d vec{1,0,0};
+        Vector3d vec{1,1,1};
 
-        Vector3d ex{0,0,0};
-        Vector3d ey{1,0,0};
-        Vector3d ez{0,1,0};
+        Vector3d ex{1,0,0};
+        Vector3d ey{0,1,0};
+        Vector3d ez{0,0,1};
         Csys csys;
         csys << ex, ey, ez;
 
         auto answer = shear_projection(vec, csys);
-        REQUIRE(answer[0] == Approx(0.0));
-        REQUIRE(answer[1] == Approx(0.0));
+        REQUIRE(answer[0] == Approx(1.0));
+        REQUIRE(answer[1] == Approx(1.0));
     }
+
+    // TODO: Write tests that are actually useful
     
 }
 
